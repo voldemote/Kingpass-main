@@ -39,9 +39,10 @@ export const KingpassClaim = () => {
   if (isLoading) console.log('Fetching balance...');
   if (isError) console.log('Error fetching balance');
   const [state, setState] = useState({
-    typeOfUser: 0,
+    typeOfUser: 2,
     subIdx: '0',
     activeMonth: 1,
+    extendMonth: 1,
     currency: initialState,
     bonusMonth: 6,
     bonusValue: '$ 499,95'
@@ -53,15 +54,15 @@ export const KingpassClaim = () => {
     setState({ ...state, [prop]: value });
   };
 
-  useEffect(() => {
-    (async () => {
-      if (isInitialized) {
-        const _typeOfUser = await getTypeofUser(address);
-        handleStateChanged('typeOfUser', Number(_typeOfUser.toString()));
-        await handleGetTypeOfUser();
-      }
-    })();
-  }, [isInitialized]);
+  // useEffect(() => {
+  //   (async () => {
+  //     if (isInitialized) {
+  //       const _typeOfUser = await getTypeofUser(address);
+  //       handleStateChanged('typeOfUser', Number(_typeOfUser.toString()));
+  //       await handleGetTypeOfUser();
+  //     }
+  //   })();
+  // }, [isInitialized]);
 
   const handleSetActiveMonth = (status: string) => {
     if (status === '--') {
@@ -70,6 +71,16 @@ export const KingpassClaim = () => {
       }
     } else if (status === '++') {
       handleStateChanged('activeMonth', state.activeMonth + 1);
+    }
+  };
+
+  const handleExtendMonth = (status: string) => {
+    if (status === '--') {
+      if (state.extendMonth > 1) {
+        handleStateChanged('extendMonth', state.extendMonth - 1);
+      }
+    } else if (status === '++') {
+      handleStateChanged('extendMonth', state.extendMonth + 1);
     }
   };
 
@@ -356,8 +367,8 @@ export const KingpassClaim = () => {
       )}
 
       {state.typeOfUser === 2 && (
-        <ClaimCardContainer>
-          <ClaimCard>
+        <ExtendCardContainer>
+          <CongratulateCard>
             <CardTitle>
               <p>Congratulations</p>
               <p>You are a</p>
@@ -366,27 +377,41 @@ export const KingpassClaim = () => {
             <CardImg>
               <Img src={KingPassLogo} alt="kingpass-logo" />
             </CardImg>
-          </ClaimCard>
-          <ClaimCard>
-            <CardTitle>
-              <p>Cancel your</p>
-              <p>Subscription</p>
-            </CardTitle>
-            <CardAction>
-              <CardButton2
-                onClick={() => {
-                  handlePromiseFunc(
-                    handleSubscriptionCancel,
-                    'Your KingPass will deactivate automatically at the next renew',
-                    ''
-                  );
-                }}
-              >
-                Cancel
-              </CardButton2>
-            </CardAction>
-          </ClaimCard>
-        </ClaimCardContainer>
+          </CongratulateCard>
+          <ExtendCard>
+            <ExtendCardTitle>Extend yours Subscription</ExtendCardTitle>
+            <ExtendCardPrimaryText>
+              Your subscription expires <span style={{ color: '#ffffff' }}>19 Mar 2023</span>
+            </ExtendCardPrimaryText>
+            <ExtendElemContainer>
+              <ActivateLabel>Months</ActivateLabel>
+              <ExtendElem>
+                <ElemContainer>
+                  <ElemButton onClick={() => handleExtendMonth('--')}>-</ElemButton>
+                  <ShowLabel style={{ width: '17px', textAlign: 'center' }}>{state.extendMonth}</ShowLabel>
+                  <ElemButton onClick={() => handleExtendMonth('++')}>+</ElemButton>
+                </ElemContainer>
+              </ExtendElem>
+            </ExtendElemContainer>
+            <ExtendCardSecondaryText>
+              Extending the subscription will not take money instantly but add the months to request further allowance.
+            </ExtendCardSecondaryText>
+            <ExtendCardButton>Extend</ExtendCardButton>
+            <ExtendLine />
+            <ExtendCardTitle>Cancel yours Subscription</ExtendCardTitle>
+            <ExtendCardButton
+              onClick={() => {
+                handlePromiseFunc(
+                  handleSubscriptionCancel,
+                  'Your KingPass will deactivate automatically at the next renew',
+                  ''
+                );
+              }}
+            >
+              Cancel
+            </ExtendCardButton>
+          </ExtendCard>
+        </ExtendCardContainer>
       )}
 
       {state.typeOfUser === 3 && (
@@ -482,6 +507,24 @@ const ClaimContent = styled.div`
   }
 `;
 
+const ExtendCardContainer = styled.div`
+  padding: 70px 30px;
+  display: flex;
+  gap: 23px;
+  border-radius: 23px;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  justify-content: center;
+  @media screen and (max-width: 1356px) {
+    padding: 0;
+    background: none;
+  }
+  @media screen and (max-width: 640px) {
+    flex-direction: column;
+    align-items: center;
+  }
+`;
+
 const ClaimCardContainer = styled.div`
   padding: 70px 30px;
   display: flex;
@@ -497,6 +540,28 @@ const ClaimCardContainer = styled.div`
   @media screen and (max-width: 500px) {
     flex-direction: column;
     align-items: center;
+  }
+`;
+
+const CongratulateCard = styled.div`
+  border-radius: 24px;
+  padding: 72px 30px;
+  width: 238px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 35px;
+  @media screen and (max-width: 640px) {
+    padding: 72px 20px;
+    background-color: rgba(0, 0, 0, 0.45);
+  }
+  @media screen and (max-width: 640px) {
+    padding: 42px 45px;
+  }
+
+  @media screen and (max-width: 390px) {
+    padding: 42px 70px;
+    width: fit-content;
   }
 `;
 
@@ -521,6 +586,71 @@ const ClaimCard = styled.div`
     margin: 0 20px;
     width: fit-content;
   }
+`;
+
+const ExtendCard = styled.div`
+  border-radius: 24px;
+  background-color: rgba(0, 0, 0, 0.45);
+  padding: 24px 20px;
+  width: 282px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  @media screen and (max-width: 390px) {
+    padding: 20px 45px;
+    margin: 0 20px;
+    width: fit-content;
+  }
+`;
+
+const ExtendCardTitle = styled.div`
+  font-size: 17px;
+  font-family: 'gotham-bold';
+  color: #ffe3fd;
+  text-align: center;
+  @media screen and (max-width: 390px) {
+    font-size: 15px;
+  }
+`;
+
+const ExtendCardPrimaryText = styled.div`
+  font-size: 13px;
+  color: #a6ffff;
+  text-align: center;
+  padding-top: 12px;
+  @media screen and (max-width: 390px) {
+    font-size: 10px;
+  }
+`;
+
+const ExtendCardSecondaryText = styled.div`
+  font-size: 9px;
+  text-align: center;
+  padding-top: 12px;
+  padding-left: 3px;
+`;
+
+const ExtendCardButton = styled.div`
+  cursor: pointer;
+  border-radius: 37px;
+  background: transparent linear-gradient(239deg, #fcb0fe 0%, #bbffff 100%) 0% 0% no-repeat padding-box;
+  font-size: 17px;
+  font-family: 'gotham-bold';
+  color: #010101;
+  display: flex;
+  justify-content: center;
+  width: 80%;
+  padding: 15px 0px;
+  margin-top: 12px;
+`;
+
+const ExtendLine = styled.div`
+  height: 1px;
+  background-color: #ffffff;
+  width: 100%;
+  margin: 16px 0;
 `;
 
 const ClaimPlanCardContainer = styled.div`
@@ -639,6 +769,14 @@ const ActivateElemGroup = styled.div`
   }
 `;
 
+const ExtendElemContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 13px;
+  padding-top: 17px;
+`;
+
 const ActivateElemContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -648,6 +786,14 @@ const ActivateElemContainer = styled.div`
 
 const ActivateLabel = styled.div`
   font-size: 13px;
+`;
+
+const ExtendElem = styled.div`
+  display: flex;
+  border: 2px solid #94eafe;
+  border-radius: 37px;
+  padding: 15px;
+  width: 110px;
 `;
 
 const ActivateElem = styled.div`
