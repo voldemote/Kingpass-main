@@ -10,7 +10,8 @@ export const Home = () => {
     <>
       <KingpassDetail />
       <BenefitsEra />
-      {isConnected && <KingpassClaim />}
+      {/* {isConnected && <KingpassClaim />} */}
+      <KingpassClaim />
       <FaqSection />
     </>
   );
