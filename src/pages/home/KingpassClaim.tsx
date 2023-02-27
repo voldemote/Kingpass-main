@@ -552,11 +552,8 @@ const CongratulateCard = styled.div`
   flex-direction: column;
   gap: 35px;
   @media screen and (max-width: 640px) {
-    padding: 72px 20px;
+    padding: 72px 30px;
     background-color: rgba(0, 0, 0, 0.45);
-  }
-  @media screen and (max-width: 640px) {
-    padding: 42px 45px;
   }
 
   @media screen and (max-width: 390px) {
@@ -591,7 +588,7 @@ const ClaimCard = styled.div`
 const ExtendCard = styled.div`
   border-radius: 24px;
   background-color: rgba(0, 0, 0, 0.45);
-  padding: 24px 20px;
+  padding: 24px 14px;
   width: 282px;
   display: flex;
   justify-content: center;
