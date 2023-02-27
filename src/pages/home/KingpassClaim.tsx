@@ -54,15 +54,15 @@ export const KingpassClaim = () => {
     setState({ ...state, [prop]: value });
   };
 
-  // useEffect(() => {
-  //   (async () => {
-  //     if (isInitialized) {
-  //       const _typeOfUser = await getTypeofUser(address);
-  //       handleStateChanged('typeOfUser', Number(_typeOfUser.toString()));
-  //       await handleGetTypeOfUser();
-  //     }
-  //   })();
-  // }, [isInitialized]);
+  useEffect(() => {
+    (async () => {
+      if (isInitialized) {
+        const _typeOfUser = await getTypeofUser(address);
+        handleStateChanged('typeOfUser', Number(_typeOfUser.toString()));
+        await handleGetTypeOfUser();
+      }
+    })();
+  }, [isInitialized]);
 
   const handleSetActiveMonth = (status: string) => {
     if (status === '--') {
@@ -638,7 +638,7 @@ const ExtendCardButton = styled.div`
   color: #010101;
   display: flex;
   justify-content: center;
-  width: 80%;
+  width: 90%;
   padding: 15px 0px;
   margin-top: 12px;
 `;
