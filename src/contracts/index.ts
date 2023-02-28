@@ -108,7 +108,7 @@ export const handleExtend = async (addy: string | undefined, months: number) => 
     const kingPrice =  await kingPass.pricePass();
     const totalPrice = kingPrice.mul(months);
     const _stableCoin = await stableCoin.attach(passAddy)
-    const tx = await _stableCoin.increaseAllowance(passAddy, totalPrice)
+    const tx = await _stableCoin.increaseAllowance(contracts.KINGpass_abi.address, totalPrice)
     return tx;
   }
 }
