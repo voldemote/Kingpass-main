@@ -407,7 +407,7 @@ export const KingpassClaim = () => {
               onClick={() => {
                 handlePromiseFunc(
                   async () => await handleExtend(address, state.extendMonth),
-                  `Successfully Extended for ${state.extendMonth}`,
+                  `Successfully Extended for ${state.extendMonth} months`,
                   ''
                 );
               }}

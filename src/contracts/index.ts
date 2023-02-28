@@ -112,8 +112,3 @@ export const handleExtend = async (addy: string | undefined, months: number) => 
     return tx;
   }
 }
-
-// export const handleApprove = async() => {
-//   const tx = await stableCoin.approve()
-// }
-
