@@ -2,7 +2,7 @@
 
 import { ethers } from 'ethers';
 import contracts from './contracts.json';
-import { erc20ABI } from 'wagmi'
+import  erc20ABI from './erc20ABI.json'
 
 let signer: any = null;
 let provider: any = null;
@@ -10,10 +10,10 @@ let provider: any = null;
 let kingPass: any = null;
 
 let kingPassWithSigner:any = null;
-let currencyContract: any = null
+let stableCoin: any = null
 
 export const initializeWeb3 = async (provider_: any, signer_: any) => {
-  currencyContract = new ethers.Contract(contracts.KINGpass_abi.address, erc20ABI, signer_);
+  stableCoin = new ethers.Contract(contracts.KINGpass_abi.address, erc20ABI, signer_);
   kingPassWithSigner = new ethers.Contract(contracts.KINGpass_abi.address, contracts.KINGpass_abi.abi, signer_);
   kingPass = new ethers.Contract(contracts.KINGpass_abi.address, contracts.KINGpass_abi.abi, provider_);
 
@@ -47,13 +47,13 @@ export const handleClaim = async () => {
 
 export const handleStartSubScription = async (months: number, currency: string, status: boolean) => {
   const user_address = await signer.getAddress()
-  const _currencyContract = (currencyContract).attach(currency);
+  const _stableCoin = (stableCoin).attach(currency);
   const _kingPassCost = await kingPass.pricePass();
-  const userBalance = await _currencyContract.balanceOf(user_address);
-  const userAllowance = await _currencyContract.allowance(user_address, contracts.KINGpass_abi.address)
+  const userBalance = await _stableCoin.balanceOf(user_address);
+  const userAllowance = await _stableCoin.allowance(user_address, contracts.KINGpass_abi.address)
   const _months =  (await kingPass.pricePass()).mul(months);
   if(parseInt(userAllowance) < parseInt(_kingPassCost)) {
-    const tx = await _currencyContract.connect(signer).approve(contracts.KINGpass_abi.address, _months);
+    const tx = await _stableCoin.connect(signer).approve(contracts.KINGpass_abi.address, _months);
     await tx.wait();
   }
   if(parseInt(userBalance) >= parseInt(_kingPassCost)) {
@@ -86,27 +86,34 @@ export const hasUserKing = async (amount: string | undefined) => {
   return false;
 }
 
+const changeTimeStampIntoTime = (timestamp: number) => {
+  const date = new Date(timestamp * 1000); // Convert timestamp to milliseconds and create a new Date object
+  const options = { day: '2-digit' as const, month: 'short' as const, year: 'numeric' as const, timeZone: 'UTC' };
+  const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
+  return formattedDate
+}
+
 export const getActiveUntill = async (addy: string | undefined) => {
   if(kingPass !== undefined && addy !== undefined) {
     const tx = await kingPass.activeUntill(addy);
     const active = parseInt(tx);
-    console.log({ active });
-    return active
+    const res = changeTimeStampIntoTime(active);
+    return res
   }
 }
 
 export const handleExtend = async (addy: string | undefined, months: number) => {
-  if(currencyContract !== undefined && addy !== undefined) {
+  if(kingPassWithSigner !== undefined && addy !== undefined) {
     const passAddy = await kingPass.usertToPaymentType(addy);
     const kingPrice =  await kingPass.pricePass();
     const totalPrice = kingPrice.mul(months);
-    console.log({ passAddy, kingPrice, totalPrice })
-    const tx = await kingPassWithSigner.increaseAllowance(passAddy, totalPrice)
+    const _stableCoin = await stableCoin.attach(passAddy)
+    const tx = await _stableCoin.increaseAllowance(passAddy, totalPrice)
     return tx;
   }
 }
 
 // export const handleApprove = async() => {
-//   const tx = await currencyContract.approve()
+//   const tx = await stableCoin.approve()
 // }
 

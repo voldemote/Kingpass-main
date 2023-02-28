@@ -48,7 +48,7 @@ export const KingpassClaim = () => {
     currency: initialState,
     bonusMonth: 6,
     bonusValue: '$ 499,95',
-    activeUntill: 0
+    activeUntill: ''
   });
 
   const { setKingStatus } = useWeb3Store();
@@ -64,7 +64,7 @@ export const KingpassClaim = () => {
         const typeOfUser = await getTypeofUser(address);
         const _typeOfUser = Number(typeOfUser.toString());
         const activeUntill_ = await getActiveUntill(address);
-        if (activeUntill_ !== undefined) setState({ ...state, typeOfUser: _typeOfUser, activeUntill: activeUntill_ });
+        if (activeUntill_ !== undefined) setState({ ...state, typeOfUser: 2, activeUntill: activeUntill_ });
       }
     })();
   }, [isInitialized]);
@@ -388,7 +388,7 @@ export const KingpassClaim = () => {
           <ExtendCard>
             <ExtendCardTitle>Extend yours Subscription</ExtendCardTitle>
             <ExtendCardPrimaryText>
-              Your subscription expires <span style={{ color: '#ffffff' }}>19 Mar 2023</span>
+              Your subscription expires <span style={{ color: '#ffffff' }}>{state.activeUntill}</span>
             </ExtendCardPrimaryText>
             <ExtendElemContainer>
               <ActivateLabel>Months</ActivateLabel>
