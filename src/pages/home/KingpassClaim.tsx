@@ -64,7 +64,7 @@ export const KingpassClaim = () => {
         const typeOfUser = await getTypeofUser(address);
         const _typeOfUser = Number(typeOfUser.toString());
         const activeUntill_ = await getActiveUntill(address);
-        if (activeUntill_ !== undefined) setState({ ...state, typeOfUser: 2, activeUntill: activeUntill_ });
+        if (activeUntill_ !== undefined) setState({ ...state, typeOfUser: _typeOfUser, activeUntill: activeUntill_ });
       }
     })();
   }, [isInitialized]);
