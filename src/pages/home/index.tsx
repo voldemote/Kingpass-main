@@ -11,7 +11,6 @@ export const Home = () => {
       <KingpassDetail />
       <BenefitsEra />
       {isConnected && <KingpassClaim />}
-      <KingpassClaim />
       <FaqSection />
     </>
   );

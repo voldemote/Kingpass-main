@@ -34,8 +34,10 @@ export const getKingpassStatus = async (address: string | undefined) => {
 };
 
 export const getTypeofUser = async (address: string | undefined) => {
-  const typeOfUser = await kingPass.typeOfUser(address);
-  return typeOfUser;
+  if(kingPass !== undefined) {
+    const typeOfUser = await kingPass.typeOfUser(address);
+    return typeOfUser;
+  }
 };
 
 export const handleClaim = async () => {
@@ -43,9 +45,9 @@ export const handleClaim = async () => {
   await tx.wait();
 };
 
-export const handleStartSubScription = async (months: number, usdtAddy: string, status: boolean) => {
+export const handleStartSubScription = async (months: number, currency: string, status: boolean) => {
   const user_address = await signer.getAddress()
-  const _currencyContract = (currencyContract).attach(usdtAddy);
+  const _currencyContract = (currencyContract).attach(currency);
   const _kingPassCost = await kingPass.pricePass();
   const userBalance = await _currencyContract.balanceOf(user_address);
   const userAllowance = await _currencyContract.allowance(user_address, contracts.KINGpass_abi.address)
@@ -56,7 +58,7 @@ export const handleStartSubScription = async (months: number, usdtAddy: string, 
   }
   if(parseInt(userBalance) >= parseInt(_kingPassCost)) {
     const __months = status ? 1 : months
-    const tx = await kingPassWithSigner.buyPass(__months, usdtAddy, status);
+    const tx = await kingPassWithSigner.buyPass(__months, currency, status);
     await tx.wait();
   } else {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
@@ -82,6 +84,26 @@ export const hasUserKing = async (amount: string | undefined) => {
     return true;
   } 
   return false;
+}
+
+export const getActiveUntill = async (addy: string | undefined) => {
+  if(kingPass !== undefined && addy !== undefined) {
+    const tx = await kingPass.activeUntill(addy);
+    const active = parseInt(tx);
+    console.log({ active });
+    return active
+  }
+}
+
+export const handleExtend = async (addy: string | undefined, months: number) => {
+  if(currencyContract !== undefined && addy !== undefined) {
+    const passAddy = await kingPass.usertToPaymentType(addy);
+    const kingPrice =  await kingPass.pricePass();
+    const totalPrice = kingPrice.mul(months);
+    console.log({ passAddy, kingPrice, totalPrice })
+    const tx = await kingPassWithSigner.increaseAllowance(passAddy, totalPrice)
+    return tx;
+  }
 }
 
 // export const handleApprove = async() => {

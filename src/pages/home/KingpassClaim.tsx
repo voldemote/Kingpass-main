@@ -9,7 +9,9 @@ import {
   handleKingpassWithdraw,
   handleSubscriptionCancel,
   hasUserKing,
-  getKingpassStatus
+  getKingpassStatus,
+  getActiveUntill,
+  handleExtend
 } from 'src/contracts';
 import styled from 'styled-components';
 import contracts from 'src/contracts/contracts.json';
@@ -45,21 +47,24 @@ export const KingpassClaim = () => {
     extendMonth: 1,
     currency: initialState,
     bonusMonth: 6,
-    bonusValue: '$ 499,95'
+    bonusValue: '$ 499,95',
+    activeUntill: 0
   });
 
   const { setKingStatus } = useWeb3Store();
 
   const handleStateChanged = (prop: string, value: string | number | boolean | CurrencyArrProps) => {
+    console.log({ prop, value });
     setState({ ...state, [prop]: value });
   };
 
   useEffect(() => {
     (async () => {
       if (isInitialized) {
-        const _typeOfUser = await getTypeofUser(address);
-        handleStateChanged('typeOfUser', Number(_typeOfUser.toString()));
-        await handleGetTypeOfUser();
+        const typeOfUser = await getTypeofUser(address);
+        const _typeOfUser = Number(typeOfUser.toString());
+        const activeUntill_ = await getActiveUntill(address);
+        if (activeUntill_ !== undefined) setState({ ...state, typeOfUser: _typeOfUser, activeUntill: activeUntill_ });
       }
     })();
   }, [isInitialized]);
@@ -113,7 +118,9 @@ export const KingpassClaim = () => {
   const handleGetTypeOfUser = async () => {
     const typeOfUser = await getTypeofUser(address);
     const _typeOfUser = Number(typeOfUser.toString());
+    console.log({ typeOfUser, _typeOfUser });
     handleStateChanged('typeOfUser', _typeOfUser);
+    // setState({ ...state, typeOfUser: _typeOfUser });
   };
 
   const handleClickCliam = async () => {
@@ -396,7 +403,17 @@ export const KingpassClaim = () => {
             <ExtendCardSecondaryText>
               Extending the subscription will not take money instantly but add the months to request further allowance.
             </ExtendCardSecondaryText>
-            <ExtendCardButton>Extend</ExtendCardButton>
+            <ExtendCardButton
+              onClick={() => {
+                handlePromiseFunc(
+                  async () => await handleExtend(address, state.extendMonth),
+                  `Successfully Extended for ${state.extendMonth}`,
+                  ''
+                );
+              }}
+            >
+              {isLoad ? <Spinner /> : 'Extend'}
+            </ExtendCardButton>
             <ExtendLine />
             <ExtendCardTitle>Cancel yours Subscription</ExtendCardTitle>
             <ExtendCardButton
@@ -408,7 +425,7 @@ export const KingpassClaim = () => {
                 );
               }}
             >
-              Cancel
+              {isLoad ? <Spinner /> : 'Cancel'}
             </ExtendCardButton>
           </ExtendCard>
         </ExtendCardContainer>
