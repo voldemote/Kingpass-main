@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
 import { ethers } from 'ethers';
+import { Addy } from 'src/config/test';
 import contracts from './contracts.json';
 import  erc20ABI from './erc20ABI.json'
 
@@ -13,9 +14,9 @@ let kingPassWithSigner:any = null;
 let stableCoin: any = null
 
 export const initializeWeb3 = async (provider_: any, signer_: any) => {
-  stableCoin = new ethers.Contract(contracts.KINGpass_abi.address, erc20ABI, signer_);
-  kingPassWithSigner = new ethers.Contract(contracts.KINGpass_abi.address, contracts.KINGpass_abi.abi, signer_);
-  kingPass = new ethers.Contract(contracts.KINGpass_abi.address, contracts.KINGpass_abi.abi, provider_);
+  stableCoin = new ethers.Contract(Addy, erc20ABI, signer_);
+  kingPassWithSigner = new ethers.Contract(Addy, contracts.KINGpass_abi.abi, signer_);
+  kingPass = new ethers.Contract(Addy, contracts.KINGpass_abi.abi, provider_);
 
   provider = provider_;
   signer = await signer_;
@@ -50,10 +51,10 @@ export const handleStartSubScription = async (months: number, currency: string, 
   const _stableCoin = (stableCoin).attach(currency);
   const _kingPassCost = await kingPass.pricePass();
   const userBalance = await _stableCoin.balanceOf(user_address);
-  const userAllowance = await _stableCoin.allowance(user_address, contracts.KINGpass_abi.address)
+  const userAllowance = await _stableCoin.allowance(user_address, Addy)
   const _months =  (await kingPass.pricePass()).mul(months);
   if(parseInt(userAllowance) < parseInt(_kingPassCost)) {
-    const tx = await _stableCoin.connect(signer).approve(contracts.KINGpass_abi.address, _months);
+    const tx = await _stableCoin.connect(signer).approve(Addy, _months);
     await tx.wait();
   }
   if(parseInt(userBalance) >= parseInt(_kingPassCost)) {

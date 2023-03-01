@@ -1,9 +1,13 @@
 {
   "KINGpass_abi": {
     "address": "0xd2d0a10D7a65464b169Ae2E381964a35b461D9D4",
-    "usdtAddress": "0x55d398326f99059fF775485246999027B3197955",
+    "test_address": "",
+    "usdtAddress": "0x5d398326f99059fF775485246999027B3197955",
+    "test_usdtAddress": "",
     "usdcAddress": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+    "test_usdcAddress": "",
     "busdAddress": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+    "test_busdAddress": "",
     "abi": [
       {
         "inputs": [],
